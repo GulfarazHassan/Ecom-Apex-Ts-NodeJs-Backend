@@ -11,8 +11,10 @@ class UsersController {
   }
 
   async getUserById(req: express.Request, res: express.Response) {
-    const user = await usersService.readById(req.body.id);
-    res.status(200).send(user);
+    const { user_id } = res.locals.jwt;
+    console.log('user_id :: ', user_id);
+    const user = await usersService.readById(user_id);
+    return res.status(200).send({ message: 'User', data: user });
   }
 
   async createUser(req: express.Request, res: express.Response) {
@@ -22,11 +24,13 @@ class UsersController {
   }
 
   async patch(req: express.Request, res: express.Response) {
-    if (req.body.password) {
-      req.body.password = await argon2.hash(req.body.password);
-    }
-    log(await usersService.patchById(req.body.id, req.body));
-    res.status(204).send();
+    const { user_id } = res.locals.jwt;
+
+    const updateProfile = await usersService.patchById(user_id, req.body);
+    console.log('user_id :: ', updateProfile);
+    return res
+      .status(200)
+      .json({ message: 'User Updated', data: updateProfile });
   }
 
   async put(req: express.Request, res: express.Response) {

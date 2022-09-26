@@ -23,7 +23,6 @@ export class AuthRoutes extends CommonRoutesConfig {
     this.app.post(`/auth/signup`, [
       body('email').isEmail(),
       body('password').isString(),
-      body('user_type').isString(),
       BodyValidationMiddleware.verifyBodyFieldsErrors,
       authMiddleware.validateSameEmailDoesntExist,
       authController.signupUser,

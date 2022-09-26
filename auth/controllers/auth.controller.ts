@@ -4,8 +4,6 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import * as argon2 from 'argon2';
 import usersService from '../../users/services/users.service';
-import communityMemberProfilesService from '../../communityMemberProfiles/services/communityMemberProfiles.service';
-import { UserTypeEnum } from '../../common/enum/common.userType.enum';
 
 const log: debug.IDebugger = debug('app:auth-controller');
 
@@ -32,23 +30,31 @@ class AuthController {
   }
 
   async signupUser(req: express.Request, res: express.Response) {
-    let { email, password, user_type } = req.body;
-    const isUserTypeValid = Object.values(UserTypeEnum)?.includes(user_type);
-    if (!isUserTypeValid) {
-      return res.status(400).json({
-        error:
-          "user_type must be in ['community_member', 'business_owners', 'non_profit_organisation, 'financial_guide'']",
-      });
-    }
+    let {
+      email,
+      password,
+      first_name,
+      last_name,
+      phone_number,
+      whatsapp_number,
+      wechat_number,
+    } = req.body;
     password = await argon2.hash(password);
-    const user = await usersService.create({ email, password, user_type });
+    const user = await usersService.create({
+      email,
+      password,
+      first_name,
+      last_name,
+      phone_number,
+      whatsapp_number,
+      wechat_number,
+    });
     const userJwt = {
       user_id: user._id,
       email: email,
       user_type: user.user_type,
     };
     const token = jwt.sign(userJwt, jwtSecret);
-    await communityMemberProfilesService.create(userJwt);
     return res.status(201).json({ accessToken: token, user: userJwt });
   }
 }

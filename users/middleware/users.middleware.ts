@@ -23,11 +23,14 @@ class UsersMiddleware {
     res: express.Response,
     next: express.NextFunction
   ) {
-    const user = await userService.getUserByEmail(req.body.email);
-    if (user) {
-      res.status(400).send({ error: `User email already exists` });
-    } else {
-      next();
+    const { email } = req.body;
+    if (email) {
+      const user = await userService.getUserByEmail(email);
+      if (user) {
+        res.status(400).send({ error: `User email already exists` });
+      } else {
+        next();
+      }
     }
   }
 
@@ -40,6 +43,18 @@ class UsersMiddleware {
       next();
     } else {
       res.status(400).send({ error: `Invalid email` });
+    }
+  }
+
+  async checkEmailExists(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    if (res.locals.user._id === req.params.userId) {
+      next();
+    } else {
+      return res.status(400).send({ error: `Invalid email` });
     }
   }
 

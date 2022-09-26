@@ -25,37 +25,19 @@ export class UsersRoutes extends CommonRoutesConfig {
         UsersController.createUser
       );
 
-    this.app.param(`userId`, UsersMiddleware.extractUserId);
     this.app
-      .route(`/users/:userId`)
-      .all(UsersMiddleware.validateUserExists, jwtMiddleware.validJWTNeeded)
-      .get(UsersController.getUserById)
-      .delete(UsersController.removeUser);
+      .route(`/users/my_profile`)
+      .get(jwtMiddleware.validJWTNeeded, UsersController.getUserById);
 
-    this.app.put(`/users/:userId`, [
-      body('email').isEmail(),
-      body('password')
-        .isLength({ min: 5 })
-        .withMessage('Must include password (5+ characters)'),
-      body('firstName').isString(),
-      body('lastName').isString(),
-      body('permissionFlags').isInt(),
-      BodyValidationMiddleware.verifyBodyFieldsErrors,
-      UsersMiddleware.validateSameEmailBelongToSameUser,
-      UsersController.put,
-    ]);
+    // this.app.put(`/users`, [
+    //   BodyValidationMiddleware.verifyBodyFieldsErrors,
+    //   UsersMiddleware.validateSameEmailBelongToSameUser,
+    //   UsersController.put,
+    // ]);
 
-    this.app.patch(`/users/:userId`, [
-      body('email').isEmail().optional(),
-      body('password')
-        .isLength({ min: 5 })
-        .withMessage('Password must be 5+ characters')
-        .optional(),
-      body('firstName').isString().optional(),
-      body('lastName').isString().optional(),
-      body('permissionFlags').isInt().optional(),
-      BodyValidationMiddleware.verifyBodyFieldsErrors,
-      UsersMiddleware.validatePatchEmail,
+    this.app.patch(`/users`, [
+      jwtMiddleware.validJWTNeeded,
+      UsersMiddleware.validateSameEmailDoesntExist,
       UsersController.patch,
     ]);
 

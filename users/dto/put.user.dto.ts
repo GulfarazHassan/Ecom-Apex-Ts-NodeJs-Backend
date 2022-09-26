@@ -1,8 +1,9 @@
 export interface PutUserDto {
-  id: string;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  permissionLevel: number;
+  user_type?: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
+  whatsapp_number?: string;
+  wechat_number?: string;
 }
