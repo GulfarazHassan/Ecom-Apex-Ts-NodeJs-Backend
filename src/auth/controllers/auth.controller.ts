@@ -3,7 +3,7 @@ import debug from 'debug';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import * as argon2 from 'argon2';
-import usersService from '../../../src/users/services/users.service';
+import usersService from '../../users/services/users.service';
 
 const log: debug.IDebugger = debug('app:auth-controller');
 
